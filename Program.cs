@@ -25,7 +25,8 @@ namespace Cine
             builder.Services.AddAutoMapper(typeof(Program));
             // Azure storage
             builder.Services.AddTransient<IAlmacenadorArchivos, AlmacenadorArchivosAZure>();
-
+            // NewtonSoft
+            builder.Services.AddControllers().AddNewtonsoftJson();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

@@ -31,6 +31,11 @@ namespace Cine.Servicios.Azure
             return await GuardarArchivo(contenido,extension,contenedor,contentType);
         }
 
+        public Task<string> EditarArchivo(byte[] contenido, string extension, string contenedor, string ruta)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<string> GuardarArchivo(byte[] contenido, string extension, string contenedor, string contentType)
         {
             var   cliente = new BlobContainerClient(connectionString, contenedor);

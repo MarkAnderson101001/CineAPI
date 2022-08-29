@@ -1,13 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Cine.Utilerias.Validations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Cine.DTO.DTOPelicula
 {
-    public class DTOPeliculaC
+    public class DTOPeliculaC : DTOPeliculaP
     {
-        public int Id { get; set; }
-        [Required]
-        public string    NombreP { get; set; }
-        public DateTime  FechaEstrenoP { get; set; }
+    
+
+        [PesoArchivoValidacion(maxpeso:4)]
+        [TipoArchivo(GrupoTipoArchivo.Imagen)]
         public IFormFile FotoP { get; set; }
+        
+
     }
 }

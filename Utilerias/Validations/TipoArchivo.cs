@@ -15,7 +15,7 @@ namespace Cine.Utilerias.Validations
         {
             if(Grupotipoarchivo == GrupoTipoArchivo.Imagen)
             {
-                validos = new string[] { "image/jpeg","image/jpg","image/png", "image/gif" };
+                validos = new string[] { "image/jpeg", "image/jpg", "image/png", "image/gif" };
             }
         }
 

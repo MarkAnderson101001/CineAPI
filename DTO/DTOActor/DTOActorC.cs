@@ -3,12 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Cine.DTO.DTOActor
 {
-    public class DTOActorC
+    public class DTOActorC : DTOActorP
     {
-        [Required]
-        [StringLength(40)]
-        public string NombreA { get; set; }
-        public DateTime FechaNacimientoA { get; set; }
         [PesoArchivoValidacion(maxpeso:4)]
         [TipoArchivo(Grupotipoarchivo:GrupoTipoArchivo.Imagen)]
         public IFormFile FotoA { get; set; }

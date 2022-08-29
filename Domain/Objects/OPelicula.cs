@@ -6,9 +6,12 @@ namespace Cine.Domain.Objects
     {
         public int      Id            { get; set; }
          [Required]
+         [StringLength(50 )]
         public string   NombreP       { get; set; }
         public DateTime FechaEstrenoP { get; set; }
         public string   FotoP         { get; set; }
+        public bool     Encine        { get; set; }
+
 
     }
 }

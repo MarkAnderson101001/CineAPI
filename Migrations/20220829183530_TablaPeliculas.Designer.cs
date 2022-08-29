@@ -4,6 +4,7 @@ using Cine.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cine.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220829183530_TablaPeliculas")]
+    partial class TablaPeliculas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,88 +130,6 @@ namespace Cine.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TUsuario");
-                });
-
-            modelBuilder.Entity("Cine.Domain.ObjectsR.PeliculaActor", b =>
-                {
-                    b.Property<int>("ActorID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PeliculaID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ActorEId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Orden")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PeliculaEId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Personaje")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ActorID", "PeliculaID");
-
-                    b.HasIndex("ActorEId");
-
-                    b.HasIndex("PeliculaEId");
-
-                    b.ToTable("TPeliculaActor");
-                });
-
-            modelBuilder.Entity("Cine.Domain.ObjectsR.PeliculaGenero", b =>
-                {
-                    b.Property<int>("GeneroID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PeliculaID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("GeneroEId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PeliculaEId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GeneroID", "PeliculaID");
-
-                    b.HasIndex("GeneroEId");
-
-                    b.HasIndex("PeliculaEId");
-
-                    b.ToTable("TPeliculaGenero");
-                });
-
-            modelBuilder.Entity("Cine.Domain.ObjectsR.PeliculaActor", b =>
-                {
-                    b.HasOne("Cine.Domain.Objects.OActor", "ActorE")
-                        .WithMany()
-                        .HasForeignKey("ActorEId");
-
-                    b.HasOne("Cine.Domain.Objects.OPelicula", "PeliculaE")
-                        .WithMany()
-                        .HasForeignKey("PeliculaEId");
-
-                    b.Navigation("ActorE");
-
-                    b.Navigation("PeliculaE");
-                });
-
-            modelBuilder.Entity("Cine.Domain.ObjectsR.PeliculaGenero", b =>
-                {
-                    b.HasOne("Cine.Domain.Objects.OGenero", "GeneroE")
-                        .WithMany()
-                        .HasForeignKey("GeneroEId");
-
-                    b.HasOne("Cine.Domain.Objects.OPelicula", "PeliculaE")
-                        .WithMany()
-                        .HasForeignKey("PeliculaEId");
-
-                    b.Navigation("GeneroE");
-
-                    b.Navigation("PeliculaE");
                 });
 #pragma warning restore 612, 618
         }
