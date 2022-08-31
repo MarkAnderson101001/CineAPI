@@ -7,7 +7,7 @@ namespace Cine.Domain.ObjectsR
         public int PeliculaID { get; set; }
         public int GeneroID   { get;set; }
 
-        public OPelicula PeliculaE { get; set; }
-        public OGenero   GeneroE   { get;set; }
+        public OPelicula Pelicula { get; set; }
+        public OGenero   Genero   { get;set; }
     }
 }

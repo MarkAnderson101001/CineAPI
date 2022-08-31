@@ -36,7 +36,7 @@ namespace Cine.Controllers
             await HttpContext.InsertarPaginacion(gqueryable, _paginacion.CantidadRegistrosPP);
             /////////////////////////////////////////////////////////////////////////////////////////////
             var entidades  = await gqueryable.Paginar(_paginacion).ToListAsync();
-
+            
 
             return mapper.Map<List<DTOActor>>(entidades);
         }

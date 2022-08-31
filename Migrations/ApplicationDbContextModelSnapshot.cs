@@ -140,75 +140,51 @@ namespace Cine.Migrations
 
             modelBuilder.Entity("Cine.Domain.ObjectsR.PeliculaActor", b =>
                 {
-                    b.Property<int>("ActorID")
-                        .HasColumnType("int");
-
                     b.Property<int>("PeliculaID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ActorEId")
+                    b.Property<int>("ActorID")
                         .HasColumnType("int");
 
                     b.Property<int>("Orden")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PeliculaEId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Personaje")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ActorID", "PeliculaID");
+                    b.HasKey("PeliculaID", "ActorID");
 
-                    b.HasIndex("ActorEId");
-
-                    b.HasIndex("PeliculaEId");
+                    b.HasIndex("ActorID");
 
                     b.ToTable("TPeliculaActor");
                 });
 
             modelBuilder.Entity("Cine.Domain.ObjectsR.PeliculaGenero", b =>
                 {
-                    b.Property<int>("GeneroID")
-                        .HasColumnType("int");
-
                     b.Property<int>("PeliculaID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("GeneroEId")
+                    b.Property<int>("GeneroID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PeliculaEId")
-                        .HasColumnType("int");
+                    b.HasKey("PeliculaID", "GeneroID");
 
-                    b.HasKey("GeneroID", "PeliculaID");
-
-                    b.HasIndex("GeneroEId");
-
-                    b.HasIndex("PeliculaEId");
+                    b.HasIndex("GeneroID");
 
                     b.ToTable("TPeliculaGenero");
                 });
 
             modelBuilder.Entity("Cine.Domain.ObjectsR.PeliculaSala", b =>
                 {
-                    b.Property<int>("SalaID")
-                        .HasColumnType("int");
-
                     b.Property<int>("PeliculaID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PeliculaEId")
+                    b.Property<int>("SalaID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SalaEId")
-                        .HasColumnType("int");
+                    b.HasKey("PeliculaID", "SalaID");
 
-                    b.HasKey("SalaID", "PeliculaID");
-
-                    b.HasIndex("PeliculaEId");
-
-                    b.HasIndex("SalaEId");
+                    b.HasIndex("SalaID");
 
                     b.ToTable("TPeliculaSala");
                 });
@@ -224,47 +200,59 @@ namespace Cine.Migrations
 
             modelBuilder.Entity("Cine.Domain.ObjectsR.PeliculaActor", b =>
                 {
-                    b.HasOne("Cine.Domain.Objects.OActor", "ActorE")
+                    b.HasOne("Cine.Domain.Objects.OActor", "Actor")
                         .WithMany("PeliculaActor")
-                        .HasForeignKey("ActorEId");
+                        .HasForeignKey("ActorID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Cine.Domain.Objects.OPelicula", "PeliculaE")
+                    b.HasOne("Cine.Domain.Objects.OPelicula", "Pelicula")
                         .WithMany("PeliculaActor")
-                        .HasForeignKey("PeliculaEId");
+                        .HasForeignKey("PeliculaID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("ActorE");
+                    b.Navigation("Actor");
 
-                    b.Navigation("PeliculaE");
+                    b.Navigation("Pelicula");
                 });
 
             modelBuilder.Entity("Cine.Domain.ObjectsR.PeliculaGenero", b =>
                 {
-                    b.HasOne("Cine.Domain.Objects.OGenero", "GeneroE")
+                    b.HasOne("Cine.Domain.Objects.OGenero", "Genero")
                         .WithMany("PeliculaGenero")
-                        .HasForeignKey("GeneroEId");
+                        .HasForeignKey("GeneroID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Cine.Domain.Objects.OPelicula", "PeliculaE")
+                    b.HasOne("Cine.Domain.Objects.OPelicula", "Pelicula")
                         .WithMany("PeliculaGenero")
-                        .HasForeignKey("PeliculaEId");
+                        .HasForeignKey("PeliculaID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("GeneroE");
+                    b.Navigation("Genero");
 
-                    b.Navigation("PeliculaE");
+                    b.Navigation("Pelicula");
                 });
 
             modelBuilder.Entity("Cine.Domain.ObjectsR.PeliculaSala", b =>
                 {
-                    b.HasOne("Cine.Domain.Objects.OPelicula", "PeliculaE")
+                    b.HasOne("Cine.Domain.Objects.OPelicula", "Pelicula")
                         .WithMany("PeliculaSala")
-                        .HasForeignKey("PeliculaEId");
+                        .HasForeignKey("PeliculaID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Cine.Domain.Objects.OSala", "SalaE")
+                    b.HasOne("Cine.Domain.Objects.OSala", "Sala")
                         .WithMany("PeliculaSala")
-                        .HasForeignKey("SalaEId");
+                        .HasForeignKey("SalaID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("PeliculaE");
+                    b.Navigation("Pelicula");
 
-                    b.Navigation("SalaE");
+                    b.Navigation("Sala");
                 });
 
             modelBuilder.Entity("Cine.Domain.Objects.OActor", b =>

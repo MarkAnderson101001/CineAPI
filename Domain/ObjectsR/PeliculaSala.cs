@@ -7,7 +7,7 @@ namespace Cine.Domain.ObjectsR
         public int PeliculaID { get; set; }
         public int SalaID     { get; set; }
 
-        public OPelicula PeliculaE { get; set; }
-        public OSala     SalaE     { get; set; }
+        public OPelicula Pelicula { get; set; }
+        public OSala     Sala     { get; set; }
     }
 }

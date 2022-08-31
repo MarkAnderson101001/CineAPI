@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Controllers\ControllersR\" />
+    <Folder Include="Migrations\" />
     <Folder Include="WebToken\" />
   </ItemGroup>
 

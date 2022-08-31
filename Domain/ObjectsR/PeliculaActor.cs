@@ -10,7 +10,7 @@ namespace Cine.Domain.ObjectsR
         public string Personaje { get; set; }
         public int    Orden     { get; set; }
 
-        public OPelicula PeliculaE { get; set; }
-        public OActor ActorE       { get; set; }
+        public OPelicula Pelicula { get; set; }
+        public OActor Actor       { get; set; }
     }
 }

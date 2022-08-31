@@ -11,9 +11,9 @@ namespace Cine.Context
         {}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PeliculaGenero>().HasKey(x => new { x.GeneroID, x.PeliculaID });
-            modelBuilder.Entity<PeliculaActor> ().HasKey(x => new { x.ActorID , x.PeliculaID });
-            modelBuilder.Entity<PeliculaSala>  ().HasKey(x => new { x.SalaID  , x.PeliculaID });
+            modelBuilder.Entity<PeliculaGenero>().HasKey(x => new { x.PeliculaID, x.GeneroID });
+            modelBuilder.Entity<PeliculaActor> ().HasKey(x => new { x.PeliculaID, x.ActorID  });
+            modelBuilder.Entity<PeliculaSala>  ().HasKey(x => new { x.PeliculaID, x.SalaID   });
 
             base.OnModelCreating(modelBuilder);
         }
