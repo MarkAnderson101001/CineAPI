@@ -19,8 +19,8 @@ namespace Cine.Controllers
             context = _context;
             mapper = _mapper;
         }
-        ////// GET //////
-
+        //// GET ////
+        #region GET
         [HttpGet]
         public async Task<ActionResult<List<DTOGenero>>> Get()
         {
@@ -39,7 +39,10 @@ namespace Cine.Controllers
             var mapActor = mapper.Map<DTOGenero>(result);
             return mapActor;
         }
-        ////// POST //////
+        #endregion
+
+        //// POST ////
+        #region POST
         [HttpPost]
         public async Task<ActionResult> CreateAuthor([FromForm] DTOGeneroC _Genero)
         {
@@ -57,8 +60,10 @@ namespace Cine.Controllers
 
             return BadRequest("Ingrese correctamente los valores");
         }
+        #endregion
 
-        ////// PUT //////
+        ///// PUT ////
+        #region PUT
         [HttpPut("{id:int}", Name = "ModifyGenero")]
         public async Task<ActionResult> ModifyActor([FromBody] DTOGeneroC _Genero, int id)
         {
@@ -67,7 +72,7 @@ namespace Cine.Controllers
             /////////////////////////////
 
             var map = mapper.Map<OGenero>(_Genero);
-             map.Id = id;
+            map.Id = id;
 
             context.Update(map);
             var result = await context.SaveChangesAsync();
@@ -77,8 +82,14 @@ namespace Cine.Controllers
             return BadRequest("No se logro hacer update");
 
         }
+        #endregion
 
-        ////// DELETE //////
+        ///// PATCH /////
+        #region PATCH
+        #endregion
+
+        //// DELETE ////
+        #region DELETE
         [HttpDelete("{id:int}", Name = "DeleteGenero")]
         public async Task<ActionResult> DeleteG(int id)
         {
@@ -94,5 +105,7 @@ namespace Cine.Controllers
 
             return BadRequest("No se logro borrar el Genero");
         }
+        #endregion
+
     }
 }

@@ -36,20 +36,19 @@ namespace Cine.Utilerias
             //////////////////////////////////////////////////////////////////////////////////////////////////
             CreateMap<OUsuario, DTOUsuario>().ReverseMap();
         }
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        #region METODOS
         private List<PeliculaActor> MapPA(DTOPeliculaC dtoPC, OPelicula pelicula)
         {
             var result = new List<PeliculaActor>();
             //////////////////////////////////////////////////////////////////
-            if (dtoPC.ActoresE == null){
+            if (dtoPC.ActoresE == null)
+            {
                 return result;
             }
 
             //////////////////////////////////////////////////////////////////
-            foreach (var actor in dtoPC.ActoresE){
+            foreach (var actor in dtoPC.ActoresE)
+            {
                 result.Add(new PeliculaActor() { ActorID = actor.ActorID, Personaje = actor.Personaje });
             }
             /////////////////////////////////////////////////////////////////
@@ -61,14 +60,16 @@ namespace Cine.Utilerias
             var result = new List<PeliculaGenero>();
             //////////////////////////////////////////////////////////
 
-            if (dtoPC.GeneroIDs == null){
+            if (dtoPC.GeneroIDs == null)
+            {
                 return result;
             }
-            foreach(var id in dtoPC.GeneroIDs){
+            foreach (var id in dtoPC.GeneroIDs)
+            {
                 result.Add(new PeliculaGenero() { GeneroID = id });
             }
             //////////////////////////////////////////////////////////
-            
+
             return result;
         }
         private List<PeliculaSala> MapPS(DTOPeliculaC dtoPC, OPelicula pelicula)
@@ -88,6 +89,8 @@ namespace Cine.Utilerias
 
             return result;
         }
+        #endregion
+
     }
 }
 

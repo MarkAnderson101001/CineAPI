@@ -1,4 +1,4 @@
-﻿using Cine.DTO.DTO;
+﻿using Cine.DTO.DTOZ;
 using Cine.Utilerias.Model_Binder;
 using Cine.Utilerias.Validations;
 using Microsoft.AspNetCore.Mvc;

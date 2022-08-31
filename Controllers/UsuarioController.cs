@@ -8,5 +8,21 @@ namespace Cine.Controllers
         {
             return View();
         }
+
+        //// GET ////
+        #region GET
+        #endregion
+        //// POST ////
+        #region POST
+        #endregion
+        //// PUT ////
+        #region PUT
+        #endregion
+        //// PATCH ////
+        #region PATCH
+        #endregion
+        //// DELETE ////
+        #region DELETE
+        #endregion
     }
 }

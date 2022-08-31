@@ -28,15 +28,15 @@ namespace Cine.Controllers
             almacenadorArchivos = _almacenadorArchivos;
         }
         ////// GET //////
-
+        #region GET
         [HttpGet]
         public async Task<ActionResult<List<DTOActor>>> GetActor([FromQuery] DTOPaginacion _paginacion)
         {
             var gqueryable = context.TActor.AsQueryable();
             await HttpContext.InsertarPaginacion(gqueryable, _paginacion.CantidadRegistrosPP);
             /////////////////////////////////////////////////////////////////////////////////////////////
-            var entidades  = await gqueryable.Paginar(_paginacion).ToListAsync();
-            
+            var entidades = await gqueryable.Paginar(_paginacion).ToListAsync();
+
 
             return mapper.Map<List<DTOActor>>(entidades);
         }
@@ -52,7 +52,10 @@ namespace Cine.Controllers
             var mapActor = mapper.Map<DTOActor>(result);
             return mapActor;
         }
+        #endregion
+
         ////// POST //////
+        #region POST
         [HttpPost]
         public async Task<ActionResult> CreateAuthor([FromForm] DTOActorC _actor)
         {
@@ -61,16 +64,16 @@ namespace Cine.Controllers
             /////////////////////////////
 
             var mapActor = mapper.Map<OActor>(_actor);
-           
-            if(_actor.FotoA != null)
+
+            if (_actor.FotoA != null)
             {
                 using (var memorystream = new MemoryStream())
                 {
                     await _actor.FotoA.CopyToAsync(memorystream);
-                    var contenido  = memorystream.ToArray();
-                    var extension  = Path.GetExtension(_actor.FotoA.FileName);
-                    var content    = _actor.FotoA.ContentType.ToString();
-                    mapActor.FotoA = await almacenadorArchivos.GuardarArchivo(contenido, extension, contenedor,content);
+                    var contenido = memorystream.ToArray();
+                    var extension = Path.GetExtension(_actor.FotoA.FileName);
+                    var content = _actor.FotoA.ContentType.ToString();
+                    mapActor.FotoA = await almacenadorArchivos.GuardarArchivo(contenido, extension, contenedor, content);
 
                 }
             }
@@ -84,8 +87,11 @@ namespace Cine.Controllers
 
             return BadRequest("Ingrese correctamente los valores");
         }
+        #endregion
+
 
         ////// PUT //////
+        #region PUT
         [HttpPut("{id:int}", Name = "ModifyActor")]
         public async Task<ActionResult> ModifyActor([FromForm] DTOActorC _actor, int id)
         {
@@ -93,18 +99,18 @@ namespace Cine.Controllers
             if (exist == null) { return NotFound(); }
             /////////////////////////////
             var mapActor = exist;
-                mapActor = mapper.Map(_actor,mapActor);
+            mapActor = mapper.Map(_actor, mapActor);
 
             if (_actor.FotoA != null)
             {
                 using (var memorystream = new MemoryStream())
                 {
                     await _actor.FotoA.CopyToAsync(memorystream);
-                    var contenido  = memorystream.ToArray();
-                    var extension  = Path.GetExtension(_actor.FotoA.FileName);
-                    var content    = _actor.FotoA.ContentType.ToString();
+                    var contenido = memorystream.ToArray();
+                    var extension = Path.GetExtension(_actor.FotoA.FileName);
+                    var content = _actor.FotoA.ContentType.ToString();
                     var fotostring = _actor.FotoA.ToString();
-                    mapActor.FotoA = await almacenadorArchivos.EditarArchivo(contenido, extension, contenedor,fotostring, content);
+                    mapActor.FotoA = await almacenadorArchivos.EditarArchivo(contenido, extension, contenedor, fotostring, content);
 
                 }
             }
@@ -116,30 +122,37 @@ namespace Cine.Controllers
             return BadRequest("No se logro hacer update");
 
         }
+        #endregion
+
         //////  PATCH //////
+
+        #region PATCH
         [HttpPatch("{id:int}", Name = "PatchActor")]
-        public async Task<ActionResult> PatchActor([FromBody] JsonPatchDocument<DTOActorP> _actor,int id)
+        public async Task<ActionResult> PatchActor([FromBody] JsonPatchDocument<DTOActorP> _actor, int id)
         {
             if (_actor == null) { return BadRequest("se esperaba actor Patch"); }
-            var exist   = await context.TActor.FirstOrDefaultAsync(x=>x.Id == id);
-            if (exist  == null) { return NotFound(); }
+            var exist = await context.TActor.FirstOrDefaultAsync(x => x.Id == id);
+            if (exist == null) { return NotFound(); }
 
             //////
             var actordb = exist;
             var mapActor = mapper.Map<DTOActorP>(actordb);
-            _actor.ApplyTo(mapActor,ModelState);
+            _actor.ApplyTo(mapActor, ModelState);
 
             var validoactor = TryValidateModel(mapActor);
-            if(!validoactor) {return BadRequest(ModelState);}
+            if (!validoactor) { return BadRequest(ModelState); }
 
-            mapper.Map(mapActor,actordb);
+            mapper.Map(mapActor, actordb);
             //////
-            var result = await context.SaveChangesAsync(); 
-            if(result > 0) { return Ok(); }
+            var result = await context.SaveChangesAsync();
+            if (result > 0) { return Ok(); }
             //////
             return BadRequest("no se lograron editar los datos");
         }
+        #endregion
+
         ////// DELETE //////
+        #region DELETE
         [HttpDelete("{id:int}", Name = "DeleteActor")]
         public async Task<ActionResult> DeleteA(int id)
         {
@@ -155,6 +168,8 @@ namespace Cine.Controllers
 
             return BadRequest("No se logro borrar el Autor");
         }
+        #endregion
+
 
     }
 }

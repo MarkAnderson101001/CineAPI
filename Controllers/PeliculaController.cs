@@ -1,13 +1,15 @@
 ﻿using AutoMapper;
 using Cine.Context;
 using Cine.Domain.Objects;
-using Cine.DTO.DTO;
 using Cine.DTO.DTOPelicula;
+using Cine.DTO.DTOZ;
 using Cine.Servicios;
 using Cine.Utilerias;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Linq.Dynamic.Core;
 
 namespace Cine.Controllers
 {
@@ -18,13 +20,15 @@ namespace Cine.Controllers
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
         private readonly IAlmacenadorArchivos almacenadorarchivos;
+        private readonly ILogger<PeliculaController> logger;
         private readonly string contenedor = "peliculas";
 
-        public PeliculaController(ApplicationDbContext _context, IMapper _mapper, IAlmacenadorArchivos _almacenadorarchivos)
+        public PeliculaController(ApplicationDbContext _context, IMapper _mapper, IAlmacenadorArchivos _almacenadorarchivos, ILogger<PeliculaController> _logger)
         {
             context             = _context;
             mapper              = _mapper;
             almacenadorarchivos = _almacenadorarchivos;
+            logger              = _logger;
         }
         ////// GET //////
         #region GET
@@ -54,6 +58,16 @@ namespace Cine.Controllers
             if (pelifiltro.encines)                       { peliculasQ = peliculasQ.Where(x => x.Encine); }
             if (pelifiltro.proximoestreno)                { peliculasQ = peliculasQ.Where(x => x.FechaEstrenoP > hoy);  }
             if (pelifiltro.GeneroID !=0)                  { peliculasQ = peliculasQ.Where(x => x.PeliculaGenero.Select(y => y.GeneroID).Contains(pelifiltro.GeneroID));}
+
+            if (!string.IsNullOrEmpty(pelifiltro.campoordenar)){
+                var torder = pelifiltro.ordenascendente ? "ascending" : "descending";
+                try{
+                    peliculasQ = peliculasQ.OrderBy($"{pelifiltro.campoordenar} {torder}");
+                }
+                catch (Exception ex){
+                    logger.LogError(ex.Message, ex);
+                }
+            }
 
             await HttpContext.InsertarPaginacion(peliculasQ, pelifiltro.CantidadPP);
             var pelis = await peliculasQ.Paginar(pelifiltro.paginacion).ToListAsync();

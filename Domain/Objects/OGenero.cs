@@ -10,7 +10,6 @@ namespace Cine.Domain.Objects
         [StringLength(40)]
         public string Genero    { get; set; }
         ///////////////////////////////////////////////////////////
-        ///
         public List<PeliculaGenero> PeliculaGenero { get; set; }
     }    
 }
