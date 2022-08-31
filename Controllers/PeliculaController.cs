@@ -20,8 +20,8 @@ namespace Cine.Controllers
 
         public PeliculaController(ApplicationDbContext _context, IMapper _mapper, IAlmacenadorArchivos _almacenadorarchivos)
         {
-            context = _context;
-            mapper = _mapper;
+            context             = _context;
+            mapper              = _mapper;
             almacenadorarchivos = _almacenadorarchivos;
         }
         ////// GET //////

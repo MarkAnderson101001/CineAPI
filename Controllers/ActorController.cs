@@ -61,6 +61,7 @@ namespace Cine.Controllers
             /////////////////////////////
 
             var mapActor = mapper.Map<OActor>(_actor);
+           
             if(_actor.FotoA != null)
             {
                 using (var memorystream = new MemoryStream())

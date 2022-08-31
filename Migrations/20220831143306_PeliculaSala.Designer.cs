@@ -4,6 +4,7 @@ using Cine.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cine.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220831143306_PeliculaSala")]
+    partial class PeliculaSala
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,9 +118,6 @@ namespace Cine.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Sala")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -225,11 +224,11 @@ namespace Cine.Migrations
             modelBuilder.Entity("Cine.Domain.ObjectsR.PeliculaActor", b =>
                 {
                     b.HasOne("Cine.Domain.Objects.OActor", "ActorE")
-                        .WithMany("PeliculaActor")
+                        .WithMany()
                         .HasForeignKey("ActorEId");
 
                     b.HasOne("Cine.Domain.Objects.OPelicula", "PeliculaE")
-                        .WithMany("PeliculaActor")
+                        .WithMany()
                         .HasForeignKey("PeliculaEId");
 
                     b.Navigation("ActorE");
@@ -240,11 +239,11 @@ namespace Cine.Migrations
             modelBuilder.Entity("Cine.Domain.ObjectsR.PeliculaGenero", b =>
                 {
                     b.HasOne("Cine.Domain.Objects.OGenero", "GeneroE")
-                        .WithMany("PeliculaGenero")
+                        .WithMany()
                         .HasForeignKey("GeneroEId");
 
                     b.HasOne("Cine.Domain.Objects.OPelicula", "PeliculaE")
-                        .WithMany("PeliculaGenero")
+                        .WithMany()
                         .HasForeignKey("PeliculaEId");
 
                     b.Navigation("GeneroE");
@@ -255,40 +254,16 @@ namespace Cine.Migrations
             modelBuilder.Entity("Cine.Domain.ObjectsR.PeliculaSala", b =>
                 {
                     b.HasOne("Cine.Domain.Objects.OPelicula", "PeliculaE")
-                        .WithMany("PeliculaSala")
+                        .WithMany()
                         .HasForeignKey("PeliculaEId");
 
                     b.HasOne("Cine.Domain.Objects.OSala", "SalaE")
-                        .WithMany("PeliculaSala")
+                        .WithMany()
                         .HasForeignKey("SalaEId");
 
                     b.Navigation("PeliculaE");
 
                     b.Navigation("SalaE");
-                });
-
-            modelBuilder.Entity("Cine.Domain.Objects.OActor", b =>
-                {
-                    b.Navigation("PeliculaActor");
-                });
-
-            modelBuilder.Entity("Cine.Domain.Objects.OGenero", b =>
-                {
-                    b.Navigation("PeliculaGenero");
-                });
-
-            modelBuilder.Entity("Cine.Domain.Objects.OPelicula", b =>
-                {
-                    b.Navigation("PeliculaActor");
-
-                    b.Navigation("PeliculaGenero");
-
-                    b.Navigation("PeliculaSala");
-                });
-
-            modelBuilder.Entity("Cine.Domain.Objects.OSala", b =>
-                {
-                    b.Navigation("PeliculaSala");
                 });
 
             modelBuilder.Entity("Cine.Domain.Objects.OUsuario", b =>

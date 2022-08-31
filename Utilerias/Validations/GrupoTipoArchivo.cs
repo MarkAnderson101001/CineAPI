@@ -2,6 +2,7 @@
 {
     public enum GrupoTipoArchivo
     {
-        Imagen
+        Imagen,
+        Documento
     }
 }

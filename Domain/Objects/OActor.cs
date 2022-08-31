@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Cine.Domain.ObjectsR;
+using System.ComponentModel.DataAnnotations;
 
 namespace Cine.Domain.Objects
 {
@@ -10,5 +11,8 @@ namespace Cine.Domain.Objects
         public string   NombreA          { get; set; }
         public DateTime FechaNacimientoA { get; set; }
         public string   FotoA            { get; set; }
+        ///////////////////////////////////////////////////////
+       
+        public List<PeliculaActor> PeliculaActor { get; set; }
     }
 }
