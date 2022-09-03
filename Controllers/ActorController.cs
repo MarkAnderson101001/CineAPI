@@ -27,149 +27,61 @@ namespace Cine.Controllers
             mapper  = _mapper;
             almacenadorArchivos = _almacenadorArchivos;
         }
-        ////// GET //////
-        #region GET
+        //// GET ////
         [HttpGet]
-        public async Task<ActionResult<List<DTOActor>>> GetActor([FromQuery] DTOPaginacion _paginacion)
+        public async Task<ActionResult<List<DTOActor>>> Get()
         {
-            var gqueryable = context.TActor.AsQueryable();
-            await HttpContext.InsertarPaginacion(gqueryable, _paginacion.CantidadRegistrosPP);
-            /////////////////////////////////////////////////////////////////////////////////////////////
-            var entidades = await gqueryable.Paginar(_paginacion).ToListAsync();
-
-
-            return mapper.Map<List<DTOActor>>(entidades);
+            var entities = await context.TGenero.ToListAsync();
+            return mapper.Map<List<DTOActor>>(entities);
         }
 
-        [HttpGet("{id:int}", Name = "GetActorId")]
-        public async Task<ActionResult<DTOActor>> getActorId(int Id)
+        [HttpGet("{id:int}", Name = "GetActor")]
+        public async Task<ActionResult<DTOActor>> Get(int id)
         {
-            var result = await context.TActor.FirstOrDefaultAsync(x => x.Id == Id);
-            if (result == null)
-            {
-                return NotFound();
-            }
-            var mapActor = mapper.Map<DTOActor>(result);
-            return mapActor;
+            var entities = await context.TGenero.FirstOrDefaultAsync(x => x.Id == id);
+            if (entities == null) return NotFound();
+            return mapper.Map<DTOActor>(entities);
         }
-        #endregion
 
-        ////// POST //////
-        #region POST
+
+        //// POST ////
         [HttpPost]
-        public async Task<ActionResult> CreateAuthor([FromForm] DTOActorC _actor)
+        public async Task<ActionResult> Post([FromBody] DTOActorC dtoactorc)
         {
-            var exist = await context.TActor.AnyAsync(x => x.NombreA == _actor.NombreA);
-            if (exist) { return BadRequest($"existe un author con el nombre: {_actor.NombreA}"); }
-            /////////////////////////////
-
-            var mapActor = mapper.Map<OActor>(_actor);
-
-            if (_actor.FotoA != null)
+            var entity = mapper.Map<OActor>(dtoactorc);
+            context.Add(entity);
+            await context.SaveChangesAsync();
+            var actordto = mapper.Map<DTOActor>(entity);
+            return new CreatedAtRouteResult("GetActor", new
             {
-                using (var memorystream = new MemoryStream())
-                {
-                    await _actor.FotoA.CopyToAsync(memorystream);
-                    var contenido = memorystream.ToArray();
-                    var extension = Path.GetExtension(_actor.FotoA.FileName);
-                    var content = _actor.FotoA.ContentType.ToString();
-                    mapActor.FotoA = await almacenadorArchivos.GuardarArchivo(contenido, extension, contenedor, content);
-
-                }
-            }
-
-            context.Add(mapActor);
-            var result = await context.SaveChangesAsync();
-
-            if (result > 0) { return Ok(); }
-
-            /////////////////////////////
-
-            return BadRequest("Ingrese correctamente los valores");
+                id = actordto.Id
+            }, actordto
+            );
         }
-        #endregion
 
-
-        ////// PUT //////
-        #region PUT
-        [HttpPut("{id:int}", Name = "ModifyActor")]
-        public async Task<ActionResult> ModifyActor([FromForm] DTOActorC _actor, int id)
+        ///// PUT ////
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> Put([FromBody] DTOGeneroC dtogeneroc, int id)
         {
-            var exist = await context.TActor.FirstOrDefaultAsync(x => x.NombreA == _actor.NombreA);
-            if (exist == null) { return NotFound(); }
-            /////////////////////////////
-            var mapActor = exist;
-            mapActor = mapper.Map(_actor, mapActor);
-
-            if (_actor.FotoA != null)
-            {
-                using (var memorystream = new MemoryStream())
-                {
-                    await _actor.FotoA.CopyToAsync(memorystream);
-                    var contenido = memorystream.ToArray();
-                    var extension = Path.GetExtension(_actor.FotoA.FileName);
-                    var content = _actor.FotoA.ContentType.ToString();
-                    var fotostring = _actor.FotoA.ToString();
-                    mapActor.FotoA = await almacenadorArchivos.EditarArchivo(contenido, extension, contenedor, fotostring, content);
-
-                }
-            }
-
-            var result = await context.SaveChangesAsync();
-            if (result > 0) { return Ok(); }
-
-            ///////////////////////////////////////
-            return BadRequest("No se logro hacer update");
-
+            var entity = mapper.Map<OGenero>(dtogeneroc);
+            entity.Id = id;
+            context.Entry(entity).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+            return NoContent();
         }
-        #endregion
 
-        //////  PATCH //////
-
+        ///// PATCH /////
         #region PATCH
-        [HttpPatch("{id:int}", Name = "PatchActor")]
-        public async Task<ActionResult> PatchActor([FromBody] JsonPatchDocument<DTOActorP> _actor, int id)
-        {
-            if (_actor == null) { return BadRequest("se esperaba actor Patch"); }
-            var exist = await context.TActor.FirstOrDefaultAsync(x => x.Id == id);
-            if (exist == null) { return NotFound(); }
-
-            //////
-            var actordb = exist;
-            var mapActor = mapper.Map<DTOActorP>(actordb);
-            _actor.ApplyTo(mapActor, ModelState);
-
-            var validoactor = TryValidateModel(mapActor);
-            if (!validoactor) { return BadRequest(ModelState); }
-
-            mapper.Map(mapActor, actordb);
-            //////
-            var result = await context.SaveChangesAsync();
-            if (result > 0) { return Ok(); }
-            //////
-            return BadRequest("no se lograron editar los datos");
-        }
         #endregion
 
-        ////// DELETE //////
-        #region DELETE
-        [HttpDelete("{id:int}", Name = "DeleteActor")]
-        public async Task<ActionResult> DeleteA(int id)
+        //// DELETE ////
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
         {
-            ////////////////////////////////////
-
-            var exist = await context.TActor.AnyAsync(x => x.Id == id);
-            if (!exist) { return NotFound(); }
-            ///////////////////////////////////
-
-            context.Remove(new OActor() { Id = id });
-            var result = await context.SaveChangesAsync();
-            if (result > 0) { return Ok(); }
-
-            return BadRequest("No se logro borrar el Autor");
+            if (!(await context.TGenero.AnyAsync(x => x.Id == id))) return NotFound();
+            context.Remove(new OGenero() { Id = id });
+            await context.SaveChangesAsync();
+            return NoContent();
         }
-        #endregion
-
-
     }
 }

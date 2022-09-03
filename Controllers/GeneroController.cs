@@ -20,92 +20,61 @@ namespace Cine.Controllers
             mapper = _mapper;
         }
         //// GET ////
-        #region GET
         [HttpGet]
         public async Task<ActionResult<List<DTOGenero>>> Get()
         {
-            var entidades = await context.TGenero.ToListAsync();
-            return mapper.Map<List<DTOGenero>>(entidades);
+            var entities = await context.TGenero.ToListAsync();
+            return mapper.Map<List<DTOGenero>>(entities);
         }
 
-        [HttpGet("{id:int}", Name = "GetGeneroId")]
-        public async Task<ActionResult<DTOGenero>> getActorId(int Id)
+        [HttpGet("{id:int}", Name = "GetGenero")]
+        public async Task<ActionResult<DTOGenero>> Get(int id)
         {
-            var result = await context.TActor.FirstOrDefaultAsync(x => x.Id == Id);
-            if (result == null)
-            {
-                return NotFound();
-            }
-            var mapActor = mapper.Map<DTOGenero>(result);
-            return mapActor;
+            var entities = await context.TGenero.FirstOrDefaultAsync(x => x.Id == id);
+            if (entities == null) return NotFound();
+            return mapper.Map<DTOGenero>(entities);
         }
-        #endregion
+
 
         //// POST ////
-        #region POST
         [HttpPost]
-        public async Task<ActionResult> CreateAuthor([FromForm] DTOGeneroC _Genero)
+        public async Task<ActionResult> Post([FromBody] DTOGeneroC dtogeneroc )
         {
-            var exist = await context.TGenero.AnyAsync(x => x.Genero == _Genero.Genero);
-            if (exist) { return BadRequest($"existe un Genero con el nombre: {_Genero.Genero}"); }
-            /////////////////////////////
-
-            var map = mapper.Map<OGenero>(_Genero);
-            context.Add(map);
-            var result = await context.SaveChangesAsync();
-
-            if (result > 0) { return Ok(); }
-
-            /////////////////////////////
-
-            return BadRequest("Ingrese correctamente los valores");
+            var entity = mapper.Map<OGenero>(dtogeneroc);
+            context.Add(entity);
+            await context.SaveChangesAsync();
+            var generodto = mapper.Map<DTOGenero>(entity);
+            return new CreatedAtRouteResult("GetGenero", new
+            {
+                id = generodto.Id 
+            }, generodto
+            );
         }
-        #endregion
 
         ///// PUT ////
-        #region PUT
-        [HttpPut("{id:int}", Name = "ModifyGenero")]
-        public async Task<ActionResult> ModifyActor([FromBody] DTOGeneroC _Genero, int id)
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> Put([FromBody] DTOGeneroC dtogeneroc, int id) 
         {
-            var exist = await context.TGenero.AnyAsync(x => x.Genero == _Genero.Genero);
-            if (!exist) { return NotFound(); }
-            /////////////////////////////
-
-            var map = mapper.Map<OGenero>(_Genero);
-            map.Id = id;
-
-            context.Update(map);
-            var result = await context.SaveChangesAsync();
-            if (result > 0) { return Ok(); }
-
-            ///////////////////////////////////////
-            return BadRequest("No se logro hacer update");
-
+            var entity = mapper.Map<OGenero>(dtogeneroc);
+            entity.Id = id;
+            context.Entry(entity).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+            return NoContent();
         }
-        #endregion
 
         ///// PATCH /////
         #region PATCH
         #endregion
 
         //// DELETE ////
-        #region DELETE
-        [HttpDelete("{id:int}", Name = "DeleteGenero")]
-        public async Task<ActionResult> DeleteG(int id)
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
         {
-            ////////////////////////////////////
-
-            var exist = await context.TGenero.AnyAsync(x => x.Id == id);
-            if (!exist) { return NotFound(); }
-            ///////////////////////////////////
-
-            context.Remove(new OActor() { Id = id });
-            var result = await context.SaveChangesAsync();
-            if (result > 0) { return Ok(); }
-
-            return BadRequest("No se logro borrar el Genero");
+            if (!(await context.TGenero.AnyAsync(x => x.Id == id))) return NotFound();
+            context.Remove(new OGenero() { Id = id });
+            await context.SaveChangesAsync();
+            return NoContent();
         }
-        #endregion
 
     }
 }
