@@ -63,8 +63,6 @@ namespace Cine.Controllers
         }
 
         ///// PATCH /////
-        #region PATCH
-        #endregion
 
         //// DELETE ////
         [HttpDelete("{id:int}")]

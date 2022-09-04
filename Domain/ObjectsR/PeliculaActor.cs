@@ -1,4 +1,4 @@
-﻿using Cine.Domain.Objects;
+﻿ using Cine.Domain.Objects;
 
 namespace Cine.Domain.ObjectsR
 {

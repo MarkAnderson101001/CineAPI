@@ -29,16 +29,18 @@ namespace Cine.Controllers
         }
         //// GET ////
         [HttpGet]
-        public async Task<ActionResult<List<DTOActor>>> Get()
+        public async Task<ActionResult<List<DTOActor>>> Get([FromQuery] DTOPaginacion pags)
         {
-            var entities = await context.TGenero.ToListAsync();
+            var queryable = context.TActor.AsQueryable();
+            await HttpContext.InsertarPaginacion(queryable, pags.CantidadRegistrosPP);
+            var entities = await queryable.Paginar(pags).ToListAsync();
             return mapper.Map<List<DTOActor>>(entities);
         }
 
         [HttpGet("{id:int}", Name = "GetActor")]
         public async Task<ActionResult<DTOActor>> Get(int id)
         {
-            var entities = await context.TGenero.FirstOrDefaultAsync(x => x.Id == id);
+            var entities = await context.TActor.FirstOrDefaultAsync(x => x.Id == id);
             if (entities == null) return NotFound();
             return mapper.Map<DTOActor>(entities);
         }
@@ -46,9 +48,24 @@ namespace Cine.Controllers
 
         //// POST ////
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] DTOActorC dtoactorc)
+        public async Task<ActionResult> Post([FromForm] DTOActorC dtoactorc)
         {
             var entity = mapper.Map<OActor>(dtoactorc);
+
+            if(dtoactorc.FotoA != null)
+            {
+                using (var memorystream = new MemoryStream())
+                {
+                    await dtoactorc.FotoA.CopyToAsync(memorystream);
+                    var content = memorystream.ToArray();
+                    var extension = Path.GetExtension(dtoactorc.FotoA.FileName);
+                    entity.FotoA = await almacenadorArchivos.GuardarArchivo(
+                        content,
+                        extension,
+                        contenedor,
+                        dtoactorc.FotoA.ContentType);
+                }
+            }
             context.Add(entity);
             await context.SaveChangesAsync();
             var actordto = mapper.Map<DTOActor>(entity);
@@ -61,25 +78,58 @@ namespace Cine.Controllers
 
         ///// PUT ////
         [HttpPut("{id:int}")]
-        public async Task<ActionResult> Put([FromBody] DTOGeneroC dtogeneroc, int id)
+        public async Task<ActionResult> Put([FromForm] DTOActorC dtoactorc, int id)
         {
-            var entity = mapper.Map<OGenero>(dtogeneroc);
-            entity.Id = id;
-            context.Entry(entity).State = EntityState.Modified;
+            //Verificamos que campos fueron modificados
+            var actorDB = await context.TActor.FirstOrDefaultAsync(x => x.Id == id);
+            if (actorDB == null) return NotFound();//En caso de no ser encontrado
+            actorDB = mapper.Map(dtoactorc, actorDB);//mapea los valores modificados a la imagen de la BD
+            //No queremos que mapper actualice la foto pq una es un formfile y otra un string
+            if (dtoactorc.FotoA != null)
+            {
+                using (var memorystream = new MemoryStream())
+                {
+                    await dtoactorc.FotoA.CopyToAsync(memorystream);
+                    var content = memorystream.ToArray();
+                    var extension = Path.GetExtension(dtoactorc.FotoA.FileName);
+                    actorDB.FotoA = await almacenadorArchivos.EditarArchivo(
+                        content,
+                        extension,
+                        contenedor,
+                        actorDB.FotoA,
+                        dtoactorc.FotoA.ContentType);
+                }
+            }
             await context.SaveChangesAsync();
             return NoContent();
         }
 
-        ///// PATCH /////
-        #region PATCH
-        #endregion
+        ///// PATCH ///// Actualizacion Parcial
+        [HttpPatch("{id:int}")]
+        public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<DTOActorP> json)
+        {
+            //Error en el Json
+            if (json == null) return BadRequest();
+            var autorDB = await context.TActor.FirstOrDefaultAsync(x => x.Id == id);
+            //El autor no existe
+            if (autorDB == null) return NotFound();
+            var entity = mapper.Map<DTOActorP>(autorDB);
+            json.ApplyTo(entity, ModelState);//ModelState from Newtonsoft
+            //No es valido
+            if(!TryValidateModel(entity)) return BadRequest();
+            mapper.Map(entity,autorDB);//from dto to entity
+            await context.SaveChangesAsync();
+            return NoContent();
+
+
+        }
 
         //// DELETE ////
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
-            if (!(await context.TGenero.AnyAsync(x => x.Id == id))) return NotFound();
-            context.Remove(new OGenero() { Id = id });
+            if (!(await context.TActor.AnyAsync(x => x.Id == id))) return NotFound();
+            context.Remove(new OActor() { Id = id });
             await context.SaveChangesAsync();
             return NoContent();
         }

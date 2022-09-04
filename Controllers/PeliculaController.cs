@@ -31,63 +31,22 @@ namespace Cine.Controllers
             logger              = _logger;
         }
         ////// GET //////
-        #region GET
-        
-        [HttpGet] // get all
-        public async Task<ActionResult<DTOPeliculasIndex>> GetPeliculas()
+        [HttpGet(Name = "GetPeliculas")]
+        public async Task<ActionResult<List<DTOPelicula>>> Get([FromQuery] DTOPaginacion pags)
         {
-            var top = 2;
-            var hoy = DateTime.Today;
-
-            var proximoestreno = await context.TPelicula.Where(x => x.FechaEstrenoP > hoy).OrderBy(x => x.FechaEstrenoP).Take(top).ToListAsync();
-            var encines        = await context.TPelicula.Where(x => x.Encine).Take(top).ToListAsync();
-
-            var result            = new DTOPeliculasIndex();
-            result.proximoestreno = mapper.Map<List<DTOPelicula>>(proximoestreno);
-            result.encines        = mapper.Map<List<DTOPelicula>>(encines);
-
-            return result;
+            var queryable = context.TPelicula.AsQueryable();
+            await HttpContext.InsertarPaginacion(queryable, pags.CantidadRegistrosPP);
+            var entities = await queryable.Paginar(pags).ToListAsync();
+            return mapper.Map<List<DTOPelicula>>(entities);
         }
 
-        [HttpGet("filtro")]
-        public async Task<ActionResult<List<DTOPelicula>>> Filtrar([FromQuery] DTOPeliculaFiltro pelifiltro )
+        [HttpGet("{id:int}", Name = "GetPelicula")]
+        public async Task<ActionResult<DTOPelicula>> Get(int id)
         {
-            var hoy        = DateTime.Now;
-            var peliculasQ = context.TPelicula.AsQueryable();
-            if (!string.IsNullOrEmpty(pelifiltro.titulo)) { peliculasQ = peliculasQ.Where(x => x.NombreP.Contains(pelifiltro.titulo));}
-            if (pelifiltro.encines)                       { peliculasQ = peliculasQ.Where(x => x.Encine); }
-            if (pelifiltro.proximoestreno)                { peliculasQ = peliculasQ.Where(x => x.FechaEstrenoP > hoy);  }
-            if (pelifiltro.GeneroID !=0)                  { peliculasQ = peliculasQ.Where(x => x.PeliculaGenero.Select(y => y.GeneroID).Contains(pelifiltro.GeneroID));}
-
-            if (!string.IsNullOrEmpty(pelifiltro.campoordenar)){
-                var torder = pelifiltro.ordenascendente ? "ascending" : "descending";
-                try{
-                    peliculasQ = peliculasQ.OrderBy($"{pelifiltro.campoordenar} {torder}");
-                }
-                catch (Exception ex){
-                    logger.LogError(ex.Message, ex);
-                }
-            }
-
-            await HttpContext.InsertarPaginacion(peliculasQ, pelifiltro.CantidadPP);
-            var pelis = await peliculasQ.Paginar(pelifiltro.paginacion).ToListAsync();
-
-            return mapper.Map<List<DTOPelicula>>(pelis);
+            var entity = await context.TPelicula.FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null) return NotFound();
+            return mapper.Map<DTOPelicula>(entity);
         }
-
-        [HttpGet("{id:int}", Name = "GetPeliculaId")] // get id 
-        public async Task<ActionResult<DTOPelicula>> GetPeliculaId(int Id)
-        {
-            var result = await context.TActor.FirstOrDefaultAsync(x => x.Id == Id);
-            if (result == null)
-            {
-                return NotFound();
-            }
-            var mapActor = mapper.Map<DTOPelicula>(result);
-            return mapActor;
-        }
-
-        #endregion
 
         ////// POST //////
         #region POST
@@ -167,26 +126,23 @@ namespace Cine.Controllers
         [HttpPatch("{id:int}", Name = "PatchPelicula")]
         public async Task<ActionResult> PatchActor([FromBody] JsonPatchDocument<DTOPeliculaP> _pelicula, int id)
         {
-            if (_pelicula == null) { return BadRequest("se esperaba actor Patch"); }
-            var exist = await context.TActor.FirstOrDefaultAsync(x => x.Id == id);
+            if (_pelicula == null) { return BadRequest(); }
+            var exist = await context.TPelicula.FirstOrDefaultAsync(x => x.Id == id);
             if (exist == null) { return NotFound(); }
 
             //////
-            var pelidb = exist;
-            var mapPeli = mapper.Map<DTOPeliculaP>(pelidb);
+            var mapPeli = mapper.Map<DTOPeliculaP>(exist);
             _pelicula.ApplyTo(mapPeli, ModelState);
 
-            var validopeli = TryValidateModel(mapPeli);
-            if (!validopeli) { return BadRequest(ModelState); }
+            if (!TryValidateModel(mapPeli)) { return BadRequest(ModelState); }
 
             
-            mapper.Map(mapPeli, pelidb);
+            mapper.Map(mapPeli, exist);
             
             //////
-            var result = await context.SaveChangesAsync();
-            if (result > 0) { return Ok(); }
+            await context.SaveChangesAsync();
             //////
-            return BadRequest("no se lograron editar los datos");
+            return NoContent();
         }
         #endregion
 
